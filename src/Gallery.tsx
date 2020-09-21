@@ -18,8 +18,23 @@ export const Gallery: React.FC = ({ children }) => {
   const [listSpring, setListSpring] = useSpring(() => ({ height: 0 }))
 
   useEffect(() => {
-    if (liSizes[index]) {
-      setListSpring(() => ({ height: liSizes[index].height }))
+    const heights = liSizes.map(({ height }) => height)
+
+    if (heights.every((height) => height === heights[0])) {
+      setListSpring(() => ({ height: heights[0], immediate: true }))
+    } else if (heights[index] !== undefined && heights[index] !== 0) {
+      setListSpring(() => ({ height: heights[index] }))
+    } else if (heights.some((height) => height)) {
+      setListSpring(() => ({
+        height: heights
+          .filter((height) => height)
+          .reduce(
+            (min, height) => (height < min ? height : min),
+            Number.MAX_VALUE
+          )
+      }))
+    } else {
+      setListSpring(() => ({ height: 0 }))
     }
   }, [index, liSizes])
 
