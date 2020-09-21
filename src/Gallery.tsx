@@ -45,8 +45,13 @@ export const Gallery: React.FC = ({ children }) => {
     const width = ulRef.current.offsetWidth
 
     if (down) {
+      const mul =
+        (indexRef.current === 0 && mx > 0) ||
+        (indexRef.current === lengthRef.current - 1 && mx < 0)
+          ? 0.5
+          : 1
       setItemSprings((i) => ({
-        x: i - indexRef.current + mx / width,
+        x: i - indexRef.current + (mx / width) * mul,
         immediate: true
       }))
     } else if (vx < -0.5) {
