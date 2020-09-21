@@ -1,0 +1,15 @@
+.Gallery {
+  overflow: hidden;
+}
+
+.Gallery > ul {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.Gallery > ul > li {
+  list-style: none;
+  position: absolute;
+  width: 100%;
+}
