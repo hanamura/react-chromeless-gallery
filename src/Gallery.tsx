@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { animated, useSpring, useSprings } from 'react-spring'
+import { useChildSizes } from 'use-child-sizes'
 import { useDrag } from 'react-use-gesture'
 
 import styles from './Gallery.module.css'
-
-import { useChildSizes } from 'use-child-sizes'
 
 export const Gallery: React.FC = ({ children }) => {
   const { length } = React.Children.toArray(children)
