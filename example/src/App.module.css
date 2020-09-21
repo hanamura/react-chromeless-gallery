@@ -1,0 +1,13 @@
+.App {
+  margin: 0 auto;
+  width: 50%;
+}
+
+.App > header,
+.App > footer {
+  align-items: center;
+  background: lightgray;
+  display: flex;
+  justify-content: center;
+  padding: 7% 0;
+}
