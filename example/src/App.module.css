@@ -3,11 +3,25 @@
   width: 50%;
 }
 
-.App > header,
-.App > footer {
+.App > h2 {
   align-items: center;
   background: lightgray;
   display: flex;
   justify-content: center;
+  margin: 0;
   padding: 7% 0;
+}
+
+.App_ImageItem {
+  display: block;
+  width: 100%;
+}
+
+.App_AnchorItem {
+  display: block;
+}
+
+.App_AnchorItem img {
+  display: block;
+  width: 100%;
 }

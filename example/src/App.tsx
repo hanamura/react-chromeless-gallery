@@ -14,11 +14,12 @@ const imageUrls = [
 
 const App = () => (
   <div className={styles.App}>
-    <header>Header</header>
+    <h2>1</h2>
     <Gallery>
       {imageUrls.map((url) => (
         <img
           key={url}
+          className={styles.App_ImageItem}
           src={url}
           alt=''
           style={{ display: 'block', width: '100%' }}
@@ -26,7 +27,21 @@ const App = () => (
         />
       ))}
     </Gallery>
-    <footer>Footer</footer>
+    <h2>2</h2>
+    <Gallery>
+      {imageUrls.map((url) => (
+        <a
+          key={url}
+          className={styles.App_AnchorItem}
+          href={url}
+          target='_blank'
+          rel='noopener noreferrer'
+          draggable={false}
+        >
+          <img src={url} alt='' draggable={false} />
+        </a>
+      ))}
+    </Gallery>
   </div>
 )
 
