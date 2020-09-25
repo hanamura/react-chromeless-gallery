@@ -53,37 +53,56 @@ export const Gallery: React.FC = ({ children }) => {
     adjust()
   }
 
-  const bind = useDrag(({ down, movement: [mx], vxvy: [vx] }) => {
-    if (!ulRef.current) return
+  const preventClickRef = useRef(false)
 
-    const width = ulRef.current.offsetWidth
+  const bind = useDrag(
+    ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
+      if (!ulRef.current) return
 
-    if (down) {
-      const mul =
-        (indexRef.current === 0 && mx > 0) ||
-        (indexRef.current === lengthRef.current - 1 && mx < 0)
-          ? 0.5
-          : 1
-      setItemSprings((i) => ({
-        x: i - indexRef.current + (mx / width) * mul,
-        immediate: true
-      }))
-    } else if (vx < -0.5) {
-      next()
-    } else if (vx > 0.5) {
-      prev()
-    } else if (mx < width * -0.5) {
-      next()
-    } else if (mx > width * 0.5) {
-      prev()
-    } else {
-      adjust()
+      const width = ulRef.current.offsetWidth
+
+      if (down) {
+        const mul =
+          (indexRef.current === 0 && mx > 0) ||
+          (indexRef.current === lengthRef.current - 1 && mx < 0)
+            ? 0.5
+            : 1
+        setItemSprings((i) => ({
+          x: i - indexRef.current + (mx / width) * mul,
+          immediate: true
+        }))
+      } else if (vx < -0.5) {
+        next()
+      } else if (vx > 0.5) {
+        prev()
+      } else if (mx < width * -0.5) {
+        next()
+      } else if (mx > width * 0.5) {
+        prev()
+      } else {
+        adjust()
+      }
+
+      if (first) {
+        preventClickRef.current = false
+      } else if (distance > 5) {
+        preventClickRef.current = true
+      }
     }
-  })
+  )
+
+  const preventClick = (e: React.MouseEvent<HTMLUListElement>) => {
+    if (preventClickRef.current) e.preventDefault()
+  }
 
   return (
     <div className={styles.Gallery}>
-      <animated.ul {...bind()} ref={ulRef} style={listSpring}>
+      <animated.ul
+        {...bind()}
+        ref={ulRef}
+        style={listSpring}
+        onClickCapture={preventClick}
+      >
         {itemSprings.map(({ x }, i) => (
           <animated.li
             key={i.toString()}
