@@ -1,30 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { animated, useSpring, useSprings } from 'react-spring'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
+import { animated, SpringValue, useSpring, useSprings } from 'react-spring'
 import { useChildSizes } from 'use-child-sizes'
 import { useDrag } from 'react-use-gesture'
 
 import styles from './Gallery.module.css'
 
-export const Gallery: React.FC = ({ children }) => {
-  const { length } = React.Children.toArray(children)
-
-  const [ulRef, liSizes] = useChildSizes<HTMLUListElement>()
-  const [index, setIndex] = useState(0)
-  const lengthRef = useRef(length)
-  lengthRef.current = length
-
-  const [itemSprings, setItemSprings] = useSprings(length, (i) => ({ x: i }))
-  const [listSpring, setListSpring] = useSpring(() => ({ height: 0 }))
+function useChildHeightSpring<T extends HTMLElement>(
+  index: number
+): [RefObject<T>, { height: SpringValue<number> }] {
+  const [ref, sizes] = useChildSizes<T>()
+  const [spring, setSpring] = useSpring(() => ({ height: 0 }))
 
   useEffect(() => {
-    const heights = liSizes.map(({ height }) => height)
+    const heights = sizes.map(({ height }) => height)
 
     if (heights.every((height) => height === heights[0])) {
-      setListSpring(() => ({ height: heights[0], immediate: true }))
+      setSpring(() => ({ height: heights[0], immediate: true }))
     } else if (heights[index] !== undefined && heights[index] !== 0) {
-      setListSpring(() => ({ height: heights[index] }))
+      setSpring(() => ({ height: heights[index] }))
     } else if (heights.some((height) => height)) {
-      setListSpring(() => ({
+      setSpring(() => ({
         height: heights
           .filter((height) => height)
           .reduce(
@@ -33,9 +28,22 @@ export const Gallery: React.FC = ({ children }) => {
           )
       }))
     } else {
-      setListSpring(() => ({ height: 0 }))
+      setSpring(() => ({ height: 0 }))
     }
-  }, [index, liSizes])
+  }, [index, sizes])
+
+  return [ref, spring]
+}
+
+export const Gallery: React.FC = ({ children }) => {
+  const { length } = React.Children.toArray(children)
+
+  const [index, setIndex] = useState(0)
+  const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(index)
+  const lengthRef = useRef(length)
+  lengthRef.current = length
+
+  const [itemSprings, setItemSprings] = useSprings(length, (i) => ({ x: i }))
 
   const adjust = (index: number) => {
     setItemSprings((i) => ({ x: i - index, immediate: false }))
@@ -51,7 +59,7 @@ export const Gallery: React.FC = ({ children }) => {
   const bind = useDrag(
     ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
       setIndex((index) => {
-        if (!ulRef.current) return index
+        if (!listRef.current) return index
 
         if (first) {
           preventClickRef.current = false
@@ -59,7 +67,7 @@ export const Gallery: React.FC = ({ children }) => {
           preventClickRef.current = true
         }
 
-        const width = ulRef.current.offsetWidth
+        const width = listRef.current.offsetWidth
 
         if (down) {
           const mul =
@@ -95,7 +103,7 @@ export const Gallery: React.FC = ({ children }) => {
     <div className={styles.Gallery}>
       <animated.ul
         {...bind()}
-        ref={ulRef}
+        ref={listRef}
         style={listSpring}
         onClickCapture={preventClick}
       >
