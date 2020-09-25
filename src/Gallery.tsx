@@ -10,7 +10,6 @@ export const Gallery: React.FC = ({ children }) => {
 
   const [ulRef, liSizes] = useChildSizes<HTMLUListElement>()
   const [index, setIndex] = useState(0)
-  const indexRef = useRef(0)
   const lengthRef = useRef(length)
   lengthRef.current = length
 
@@ -38,56 +37,53 @@ export const Gallery: React.FC = ({ children }) => {
     }
   }, [index, liSizes])
 
-  const adjust = () => {
-    setItemSprings((i) => ({ x: i - indexRef.current, immediate: false }))
-    setIndex(indexRef.current)
+  const adjust = (index: number) => {
+    setItemSprings((i) => ({ x: i - index, immediate: false }))
+    return index
   }
 
-  const next = () => {
-    indexRef.current = Math.min(indexRef.current + 1, lengthRef.current - 1)
-    adjust()
-  }
-
-  const prev = () => {
-    indexRef.current = Math.max(indexRef.current - 1, 0)
-    adjust()
-  }
+  useEffect(() => {
+    adjust(index)
+  }, [index])
 
   const preventClickRef = useRef(false)
 
   const bind = useDrag(
     ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
-      if (!ulRef.current) return
+      setIndex((index) => {
+        if (!ulRef.current) return index
 
-      const width = ulRef.current.offsetWidth
+        if (first) {
+          preventClickRef.current = false
+        } else if (distance > 5) {
+          preventClickRef.current = true
+        }
 
-      if (down) {
-        const mul =
-          (indexRef.current === 0 && mx > 0) ||
-          (indexRef.current === lengthRef.current - 1 && mx < 0)
-            ? 0.5
-            : 1
-        setItemSprings((i) => ({
-          x: i - indexRef.current + (mx / width) * mul,
-          immediate: true
-        }))
-      } else if (vx < -0.5) {
-        next()
-      } else if (vx > 0.5) {
-        prev()
-      } else if (mx < width * -0.5) {
-        next()
-      } else if (mx > width * 0.5) {
-        prev()
-      } else {
-        adjust()
-      }
+        const width = ulRef.current.offsetWidth
 
-      if (first) {
-        preventClickRef.current = false
-      } else if (distance > 5) {
-        preventClickRef.current = true
-      }
+        if (down) {
+          const mul =
+            (index === 0 && mx > 0) ||
+            (index === lengthRef.current - 1 && mx < 0)
+              ? 0.5
+              : 1
+          setItemSprings((i) => ({
+            x: i - index + (mx / width) * mul,
+            immediate: true
+          }))
+          return index
+        } else if (vx < -0.5) {
+          return adjust(Math.min(index + 1, lengthRef.current - 1))
+        } else if (vx > 0.5) {
+          return adjust(Math.max(index - 1, 0))
+        } else if (mx < width * -0.5) {
+          return adjust(Math.min(index + 1, lengthRef.current - 1))
+        } else if (mx > width * 0.5) {
+          return adjust(Math.max(index - 1, 0))
+        } else {
+          return adjust(index)
+        }
+      })
     }
   )
 
