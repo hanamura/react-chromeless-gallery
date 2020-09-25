@@ -35,6 +35,17 @@ function useChildHeightSpring<T extends HTMLElement>(
   return [ref, spring]
 }
 
+function usePreventClick<T extends HTMLElement>(): [
+  (prevent: boolean) => void,
+  (e: React.MouseEvent<T>) => void
+] {
+  const [prevent, setPrevent] = useState(false)
+  const preventClick = (e: React.MouseEvent<T>) => {
+    if (prevent) e.preventDefault()
+  }
+  return [setPrevent, preventClick]
+}
+
 export const Gallery: React.FC = ({ children }) => {
   const { length } = React.Children.toArray(children)
 
@@ -42,6 +53,7 @@ export const Gallery: React.FC = ({ children }) => {
   const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(index)
   const lengthRef = useRef(length)
   lengthRef.current = length
+  const [setPrevent, preventClick] = usePreventClick<HTMLUListElement>()
 
   const [itemSprings, setItemSprings] = useSprings(length, (i) => ({ x: i }))
 
@@ -54,17 +66,15 @@ export const Gallery: React.FC = ({ children }) => {
     adjust(index)
   }, [index])
 
-  const preventClickRef = useRef(false)
-
   const bind = useDrag(
     ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
       setIndex((index) => {
         if (!listRef.current) return index
 
         if (first) {
-          preventClickRef.current = false
+          setPrevent(false)
         } else if (distance > 5) {
-          preventClickRef.current = true
+          setPrevent(true)
         }
 
         const width = listRef.current.offsetWidth
@@ -94,10 +104,6 @@ export const Gallery: React.FC = ({ children }) => {
       })
     }
   )
-
-  const preventClick = (e: React.MouseEvent<HTMLUListElement>) => {
-    if (preventClickRef.current) e.preventDefault()
-  }
 
   return (
     <div className={styles.Gallery}>
