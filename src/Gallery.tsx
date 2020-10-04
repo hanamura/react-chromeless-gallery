@@ -3,6 +3,7 @@ import { animated, SpringValue, useSpring, useSprings } from 'react-spring'
 import { useChildSizes } from 'use-child-sizes'
 import { useDrag } from 'react-use-gesture'
 
+import { useInternalGalleryContext } from './GalleryContext'
 import styles from './Gallery.module.css'
 
 function useChildHeightSpring<T extends HTMLElement>(
@@ -49,6 +50,16 @@ function usePreventClick<T extends HTMLElement>(): [
 export const Gallery: React.FC = ({ children }) => {
   const { length } = React.Children.toArray(children)
 
+  const {
+    contextIndex,
+    setContextIndex,
+    setContextLength
+  } = useInternalGalleryContext()
+
+  useEffect(() => {
+    setContextLength(length)
+  }, [length])
+
   const [index, setIndex] = useState(0)
   const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(index)
   const lengthRef = useRef(length)
@@ -64,7 +75,12 @@ export const Gallery: React.FC = ({ children }) => {
 
   useEffect(() => {
     adjust(index)
+    setContextIndex(index)
   }, [index])
+
+  useEffect(() => {
+    setIndex(contextIndex)
+  }, [contextIndex])
 
   const bind = useDrag(
     ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
