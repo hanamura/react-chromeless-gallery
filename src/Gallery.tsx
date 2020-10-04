@@ -1,51 +1,11 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react'
-import { animated, SpringValue, useSpring, useSprings } from 'react-spring'
-import { useChildSizes } from 'use-child-sizes'
+import React, { useEffect, useRef, useState } from 'react'
+import { animated, useSprings } from 'react-spring'
 import { useDrag } from 'react-use-gesture'
 
+import { useChildHeightSpring } from './useChildHeightSpring'
 import { useInternalGalleryContext } from './GalleryContext'
+import { usePreventClick } from './usePreventClick'
 import styles from './Gallery.module.css'
-
-function useChildHeightSpring<T extends HTMLElement>(
-  index: number
-): [RefObject<T>, { height: SpringValue<number> }] {
-  const [ref, sizes] = useChildSizes<T>()
-  const [spring, setSpring] = useSpring(() => ({ height: 0 }))
-
-  useEffect(() => {
-    const heights = sizes.map(({ height }) => height)
-
-    if (heights.every((height) => height === heights[0])) {
-      setSpring(() => ({ height: heights[0], immediate: true }))
-    } else if (heights[index] !== undefined && heights[index] !== 0) {
-      setSpring(() => ({ height: heights[index] }))
-    } else if (heights.some((height) => height)) {
-      setSpring(() => ({
-        height: heights
-          .filter((height) => height)
-          .reduce(
-            (min, height) => (height < min ? height : min),
-            Number.MAX_VALUE
-          )
-      }))
-    } else {
-      setSpring(() => ({ height: 0 }))
-    }
-  }, [index, sizes])
-
-  return [ref, spring]
-}
-
-function usePreventClick<T extends HTMLElement>(): [
-  (prevent: boolean) => void,
-  (e: React.MouseEvent<T>) => void
-] {
-  const [prevent, setPrevent] = useState(false)
-  const preventClick = (e: React.MouseEvent<T>) => {
-    if (prevent) e.preventDefault()
-  }
-  return [setPrevent, preventClick]
-}
 
 export const Gallery: React.FC = ({ children }) => {
   const { length } = React.Children.toArray(children)
