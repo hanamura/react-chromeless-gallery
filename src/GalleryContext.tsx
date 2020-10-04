@@ -8,10 +8,10 @@ type Action = { type: 'index' | 'length'; value: number }
 
 const initialState: State = { index: 0, length: 0 }
 
-export const GalleryContext = createContext<{
-  state: State
-  dispatch: (action: Action) => void
-}>({ state: { ...initialState }, dispatch: () => {} })
+const GalleryContext = createContext<[State, (action: Action) => void]>([
+  { ...initialState },
+  () => {}
+])
 
 // provider
 
@@ -25,11 +25,9 @@ const reducer = (state: State, action: Action) => {
 }
 
 export const GalleryProvider: React.FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const value = useReducer(reducer, initialState)
   return (
-    <GalleryContext.Provider value={{ state, dispatch }}>
-      {children}
-    </GalleryContext.Provider>
+    <GalleryContext.Provider value={value}>{children}</GalleryContext.Provider>
   )
 }
 
@@ -51,18 +49,16 @@ export const GalleryConsumer: React.FC<GalleryConsumerProps> = ({
   children
 }) => (
   <GalleryContext.Consumer>
-    {({ state: { index, length }, dispatch }) => {
-      const to = (index: number) => {
-        if (!dispatch) return
-        if (index < 0) return
-        if (index >= length) return
-        dispatch({ type: 'index', value: index })
+    {([{ index, length }, dispatch]) => {
+      const to = (value: number) => {
+        if (value < 0) return
+        if (value >= length) return
+        dispatch({ type: 'index', value })
       }
       const prev = () => to(index - 1)
       const next = () => to(index + 1)
       const hasPrev = index > 0
       const hasNext = index < length - 1
-
       return children({ index, length, to, prev, next, hasPrev, hasNext })
     }}
   </GalleryContext.Consumer>
@@ -71,7 +67,7 @@ export const GalleryConsumer: React.FC<GalleryConsumerProps> = ({
 // hook
 
 export const useInternalGalleryContext = () => {
-  const { state, dispatch } = useContext(GalleryContext)
+  const [state, dispatch] = useContext(GalleryContext)
   return {
     contextIndex: state.index,
     setContextIndex: (index: number) =>
