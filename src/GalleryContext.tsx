@@ -24,7 +24,13 @@ const reducer = (state: State, action: Action) => {
   }
 }
 
-export const GalleryProvider: React.FC = ({ children }) => {
+interface GalleryProviderProps {
+  children: React.ReactNode
+}
+
+export const GalleryProvider: React.FC<GalleryProviderProps> = ({
+  children
+}) => {
   const value = useReducer(reducer, initialState)
   return (
     <GalleryContext.Provider value={value}>{children}</GalleryContext.Provider>
@@ -33,38 +39,52 @@ export const GalleryProvider: React.FC = ({ children }) => {
 
 // consumer
 
+interface GalleryConsumerArgs {
+  index: number
+  length: number
+  to: (index: number) => void
+  prev: () => void
+  next: () => void
+  hasNext: boolean
+  hasPrev: boolean
+}
+
+const composeConsumerArgs: (
+  state: { index: number; length: number },
+  dispatch: (action: Action) => void
+) => GalleryConsumerArgs = ({ index, length }, dispatch) => {
+  const to = (value: number) => {
+    if (value < 0) return
+    if (value >= length) return
+    dispatch({ type: 'index', value })
+  }
+  const prev = () => to(index - 1)
+  const next = () => to(index + 1)
+  const hasPrev = index > 0
+  const hasNext = index < length - 1
+  return { index, length, to, prev, next, hasPrev, hasNext }
+}
+
 interface GalleryConsumerProps {
-  children: (args: {
-    index: number
-    length: number
-    to: (index: number) => void
-    prev: () => void
-    next: () => void
-    hasNext: boolean
-    hasPrev: boolean
-  }) => React.ReactNode
+  children: (args: GalleryConsumerArgs) => React.ReactNode
 }
 
 export const GalleryConsumer: React.FC<GalleryConsumerProps> = ({
   children
 }) => (
   <GalleryContext.Consumer>
-    {([{ index, length }, dispatch]) => {
-      const to = (value: number) => {
-        if (value < 0) return
-        if (value >= length) return
-        dispatch({ type: 'index', value })
-      }
-      const prev = () => to(index - 1)
-      const next = () => to(index + 1)
-      const hasPrev = index > 0
-      const hasNext = index < length - 1
-      return children({ index, length, to, prev, next, hasPrev, hasNext })
-    }}
+    {([{ index, length }, dispatch]) =>
+      children(composeConsumerArgs({ index, length }, dispatch))
+    }
   </GalleryContext.Consumer>
 )
 
 // hook
+
+export const useGalleryContext: () => GalleryConsumerArgs = () => {
+  const [{ index, length }, dispatch] = useContext(GalleryContext)
+  return composeConsumerArgs({ index, length }, dispatch)
+}
 
 export const useInternalGalleryContext = () => {
   const [state, dispatch] = useContext(GalleryContext)
