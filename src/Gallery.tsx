@@ -26,7 +26,9 @@ export const Gallery: React.FC = ({ children }) => {
   lengthRef.current = length
   const [setPrevent, preventClick] = usePreventClick<HTMLUListElement>()
 
-  const [itemSprings, setItemSprings] = useSprings(length, (i) => ({ x: i }))
+  const [itemSprings, setItemSprings] = useSprings(length, (i) => ({
+    x: i - contextIndex
+  }))
 
   const adjust = (index: number) => {
     setItemSprings((i) => ({ x: i - index, immediate: false }))
