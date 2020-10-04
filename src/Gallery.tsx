@@ -60,7 +60,7 @@ export const Gallery: React.FC = ({ children }) => {
     setContextLength(length)
   }, [length])
 
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(contextIndex)
   const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(index)
   const lengthRef = useRef(length)
   lengthRef.current = length

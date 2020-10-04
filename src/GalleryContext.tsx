@@ -25,13 +25,15 @@ const reducer = (state: State, action: Action) => {
 }
 
 interface GalleryProviderProps {
+  initialIndex?: number
   children: React.ReactNode
 }
 
 export const GalleryProvider: React.FC<GalleryProviderProps> = ({
+  initialIndex = 0,
   children
 }) => {
-  const value = useReducer(reducer, initialState)
+  const value = useReducer(reducer, { ...initialState, index: initialIndex })
   return (
     <GalleryContext.Provider value={value}>{children}</GalleryContext.Provider>
   )
