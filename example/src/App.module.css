@@ -1,21 +1,27 @@
 .App {
-  margin: 0 auto;
-  width: 50%;
+  margin: 10% auto;
 }
 
-.App > h2 {
-  align-items: center;
-  background: lightgray;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  padding: 7% 0;
+@media (min-width: 600px) {
+  .App {
+    width: 50%;
+  }
 }
+
+/* Headings */
+
+.App > h2 {
+  margin: 3em 0 1em;
+}
+
+/* ImageItem */
 
 .App_ImageItem {
   display: block;
   width: 100%;
 }
+
+/* AnchorItem */
 
 .App_AnchorItem {
   display: block;
@@ -24,4 +30,99 @@
 .App_AnchorItem img {
   display: block;
   width: 100%;
+}
+
+/* Control */
+
+.App_Control {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  line-height: 0;
+  padding: 1em 0;
+}
+
+.App_ControlPrev,
+.App_ControlNext {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  height: 30px;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  position: relative;
+  width: 30px;
+}
+
+.App_ControlPrev::before,
+.App_ControlNext::before {
+  border-left: 3px solid rgba(0, 0, 0, 0.5);
+  border-top: 3px solid rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  height: 10px;
+  left: calc(50% - 5px);
+  position: absolute;
+  top: calc(50% - 5px);
+  transition: border-color 0.25s;
+  width: 10px;
+}
+
+.App_ControlPrev:disabled::before,
+.App_ControlNext:disabled::before {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.App_ControlPrev::before {
+  transform: rotate(-45deg);
+}
+
+.App_ControlNext::before {
+  transform: rotate(135deg);
+}
+
+.App_Control ul {
+  align-items: center;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.App_Control li {
+  list-style: none;
+}
+
+.App_Control li button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  height: 20px;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  position: relative;
+  width: 20px;
+}
+
+.App_Control li button::before {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 100%;
+  content: '';
+  display: block;
+  height: 10px;
+  left: calc(50% - 5px);
+  position: absolute;
+  top: calc(50% - 5px);
+  transition: background-color 0.25s;
+  width: 10px;
+}
+
+.App_Control li button.isActive::before {
+  background-color: rgba(0, 0, 0, 0.5);
 }
