@@ -10,11 +10,15 @@ import styles from './Gallery.module.css'
 interface GalleryProps {
   containerHeight?: 'active' | 'min' | 'max'
   showOverflow?: boolean
+  className?: string
+  style?: React.CSSProperties
 }
 
 export const Gallery: React.FC<GalleryProps> = ({
   containerHeight = 'active',
   showOverflow = false,
+  className,
+  style,
   children
 }) => {
   const { length } = React.Children.toArray(children)
@@ -99,7 +103,8 @@ export const Gallery: React.FC<GalleryProps> = ({
     <div
       className={`${styles.Gallery} ${
         showOverflow ? styles.isShowOverflow : ''
-      }`}
+      } ${className || ''}`}
+      style={style}
     >
       <animated.ul
         {...bind()}
