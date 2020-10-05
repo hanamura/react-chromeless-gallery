@@ -56,7 +56,7 @@ const App = () => {
         ))}
       </Gallery>
 
-      <h2>Various aspect ratio</h2>
+      <h2>Various height</h2>
       <Gallery>
         {imageUrlsVariousAspectRatio.map((url) => (
           <img
