@@ -27,6 +27,7 @@ const imageUrlsVariousAspectRatio = [
 const App = () => {
   return (
     <div className={styles.App}>
+      <h1>React Chromeless Gallery</h1>
       <h2>Minimal</h2>
       <Gallery>
         {imageUrls.map((url) => (

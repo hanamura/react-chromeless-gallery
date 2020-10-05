@@ -10,8 +10,24 @@
 
 /* Headings */
 
+.App > h1 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .App > h2 {
-  margin: 3em 0 1em;
+  margin: 3em 1rem 0.5em;
+}
+
+@media (min-width: 600px) {
+  .App > h1 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .App > h2 {
+    margin: 3em 0 1em;
+  }
 }
 
 /* ImageItem */
