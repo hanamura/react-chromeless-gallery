@@ -9,10 +9,12 @@ import styles from './Gallery.module.css'
 
 interface GalleryProps {
   containerHeight?: 'active' | 'min' | 'max'
+  showOverflow?: boolean
 }
 
 export const Gallery: React.FC<GalleryProps> = ({
   containerHeight = 'active',
+  showOverflow = false,
   children
 }) => {
   const { length } = React.Children.toArray(children)
@@ -94,7 +96,11 @@ export const Gallery: React.FC<GalleryProps> = ({
   )
 
   return (
-    <div className={styles.Gallery}>
+    <div
+      className={`${styles.Gallery} ${
+        showOverflow ? styles.isShowOverflow : ''
+      }`}
+    >
       <animated.ul
         {...bind()}
         ref={listRef}
@@ -104,7 +110,21 @@ export const Gallery: React.FC<GalleryProps> = ({
         {itemSprings.map(({ x }, i) => (
           <animated.li
             key={i.toString()}
-            style={{ transform: x.to((v) => `translate3d(${v * 100}%, 0, 0)`) }}
+            style={
+              showOverflow
+                ? {
+                    transform: x.to((v) => `translate3d(${v * 100}%, 0, 0)`)
+                  }
+                : {
+                    transform: x.to((v) =>
+                      v <= -1
+                        ? 'translate3d(-100%, 0, 0)'
+                        : 1 <= v
+                        ? 'translate3d(100%, 0, 0)'
+                        : `translate3d(${v * 100}%, 0, 0)`
+                    )
+                  }
+            }
           >
             {React.Children.toArray(children)[i]}
           </animated.li>

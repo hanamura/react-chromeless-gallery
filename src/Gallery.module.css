@@ -2,6 +2,10 @@
   overflow: hidden;
 }
 
+.Gallery.isShowOverflow {
+  overflow: visible;
+}
+
 .Gallery > ul {
   cursor: grab;
   margin: 0;
