@@ -1,7 +1,7 @@
 {
   "name": "react-chromeless-gallery",
   "version": "1.0.0",
-  "description": "",
+  "description": "Chromeless gallery component with flexible controls.",
   "author": "hanamura",
   "license": "MIT",
   "repository": "hanamura/react-chromeless-gallery",
