@@ -7,7 +7,14 @@ import { useInternalGalleryContext } from './GalleryContext'
 import { usePreventClick } from './usePreventClick'
 import styles from './Gallery.module.css'
 
-export const Gallery: React.FC = ({ children }) => {
+interface GalleryProps {
+  containerHeight?: 'active' | 'min' | 'max'
+}
+
+export const Gallery: React.FC<GalleryProps> = ({
+  containerHeight = 'active',
+  children
+}) => {
   const { length } = React.Children.toArray(children)
 
   const {
@@ -21,7 +28,10 @@ export const Gallery: React.FC = ({ children }) => {
   }, [length])
 
   const [index, setIndex] = useState(contextIndex)
-  const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(index)
+  const [listRef, listSpring] = useChildHeightSpring<HTMLUListElement>(
+    index,
+    containerHeight
+  )
   const lengthRef = useRef(length)
   lengthRef.current = length
   const [setPrevent, preventClick] = usePreventClick<HTMLUListElement>()

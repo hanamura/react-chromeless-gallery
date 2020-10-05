@@ -3,7 +3,8 @@ import { SpringValue, useSpring } from 'react-spring'
 import { useChildSizes } from 'use-child-sizes'
 
 export function useChildHeightSpring<T extends HTMLElement>(
-  index: number
+  index: number,
+  adaptation: 'active' | 'min' | 'max'
 ): [RefObject<T>, { height: SpringValue<number> }] {
   const [ref, sizes] = useChildSizes<T>()
   const [spring, setSpring] = useSpring(() => ({ height: 0 }))
@@ -11,11 +12,23 @@ export function useChildHeightSpring<T extends HTMLElement>(
   useEffect(() => {
     const heights = sizes.map(({ height }) => height)
 
+    if (heights.every((height) => !height)) {
+      setSpring(() => ({ height: 0 }))
+      return
+    }
+
     if (heights.every((height) => height === heights[0])) {
       setSpring(() => ({ height: heights[0], immediate: true }))
-    } else if (heights[index] !== undefined && heights[index] !== 0) {
+      return
+    }
+
+    if (
+      adaptation === 'active' &&
+      heights[index] !== undefined &&
+      heights[index] !== 0
+    ) {
       setSpring(() => ({ height: heights[index] }))
-    } else if (heights.some((height) => height)) {
+    } else if (adaptation === 'active' || adaptation === 'min') {
       setSpring(() => ({
         height: heights
           .filter((height) => height)
@@ -25,9 +38,14 @@ export function useChildHeightSpring<T extends HTMLElement>(
           )
       }))
     } else {
-      setSpring(() => ({ height: 0 }))
+      setSpring(() => ({
+        height: heights.reduce(
+          (max, height) => (height > max ? height : max),
+          Number.MIN_VALUE
+        )
+      }))
     }
-  }, [index, sizes])
+  }, [index, adaptation, sizes])
 
   return [ref, spring]
 }
