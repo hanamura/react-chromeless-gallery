@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { animated, useSprings } from 'react-spring'
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 import { useDrag } from 'react-use-gesture'
 
 import { useChildHeightSpring } from './useChildHeightSpring'
@@ -61,7 +62,7 @@ export const Gallery: React.FC<GalleryProps> = ({
   }, [contextIndex])
 
   const bind = useDrag(
-    ({ down, movement: [mx], vxvy: [vx], first, distance }) => {
+    ({ down, movement: [mx], vxvy: [vx], first, last, distance }) => {
       setIndex((index) => {
         if (!listRef.current) return index
 
@@ -69,6 +70,11 @@ export const Gallery: React.FC<GalleryProps> = ({
           setPrevent(false)
         } else if (distance > 5) {
           setPrevent(true)
+          disableBodyScroll(listRef.current)
+        }
+
+        if (last) {
+          enableBodyScroll(listRef.current)
         }
 
         const width = listRef.current.offsetWidth

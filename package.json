@@ -30,6 +30,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/body-scroll-lock": "^2.6.1",
     "@types/jest": "^25.1.4",
     "@types/node": "^12.12.38",
     "@types/react": "^16.9.27",
@@ -62,6 +63,7 @@
     "dist"
   ],
   "dependencies": {
+    "body-scroll-lock": "^3.1.5",
     "react-spring": "^9.0.0-rc.3",
     "react-use-gesture": "^7.0.16",
     "use-child-sizes": "^1.0.0"
