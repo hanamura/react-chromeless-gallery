@@ -74,6 +74,7 @@ export const Gallery: React.FC<GalleryProps> = ({
         }
 
         if (last) {
+          requestAnimationFrame(() => setPrevent(false))
           enableBodyScroll(listRef.current)
         }
 
