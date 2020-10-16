@@ -96,6 +96,9 @@ export const Gallery: React.FC<GalleryProps> = ({
           return adjust(index)
         }
       })
+    },
+    {
+      axis: 'x'
     }
   )
 
